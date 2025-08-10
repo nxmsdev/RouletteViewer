@@ -1,0 +1,23 @@
+﻿.header {
+    background-color: red;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 64px;
+    border-radius: 8px;
+    padding: 0px 96px;
+    font-size: 26px;
+    font-style: normal;
+}
+
+.header div {
+    padding: 8px;
+}
+
+.header_right_container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 30px;
+}
