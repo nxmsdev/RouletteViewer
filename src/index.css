@@ -3,9 +3,20 @@
     padding: 0;
     font-family: 'Minecraft';
     user-select: none;
+
+    font-style: normal;
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.6);
+    color: #f8f8f8;
+
+    overflow: hidden !important;
 }
 
 body {
-    background-color: #171717;
-    color: #d6d6d6;
+    font-size: 2vmin;
+
+    background-image: url("../../public/dirt_block.png");
+    image-rendering: pixelated;
+    background-size: 64px;
+    box-shadow: 0px 0px 32px rgba(0, 0, 0, 0.5) inset;
+    backdrop-filter: brightness(0.5);
 }

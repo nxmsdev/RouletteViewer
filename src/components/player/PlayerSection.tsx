@@ -1,4 +1,5 @@
-﻿import PlayerContainer from "./PlayerContainer.tsx";
+﻿import "./PlayerSection.css";
+import PlayerContainer from "./PlayerContainer.tsx";
 import { useEffect, useState } from "react";
 
 export default function PlayerSection() {
@@ -13,7 +14,7 @@ export default function PlayerSection() {
                 // check if parsed data is an array
                 if (Array.isArray(dataArray)) {
                     setPlayerData(currentData => { // update playerData state based on differences to avoid unnecessary re-renders
-                        const currentMap = new Map(currentData.map(p => [p.username, p])); // create a map for quick lookup of existing players by username
+                        const currentMap = new Map(currentData.map(player => [player.username, player])); // create a map for quick lookup of existing players by username
 
                         const updatedData: typeof currentData = [];
                         const handledUsernames = new Set<string>(); // keep track of usernames already handled
@@ -41,7 +42,7 @@ export default function PlayerSection() {
                         return changed ? updatedData : currentData; // return updatedData if changed, else keep previous state to avoid re-render
                     });
 
-                    const sumAmount = dataArray.reduce((acc, player) => acc + player.amount, 0); // collect sum of all amounts
+                    const sumAmount = dataArray.reduce((acc, player) => acc + player.amount, 0) // collect sum of all amounts
 
                     // send the new sum of payment amounts to the main
                     if (window.electronAPI && window.electronAPI.sendSumAmountToMain) {
@@ -86,7 +87,7 @@ export default function PlayerSection() {
     }
 
     return (
-        <div className={"player_section"}>
+        <div className="player_section">
             {playerData.map((player, index) => {
                 console.log("Generate new Player Component\nUsername: " + player.username + "\nAmount: " + player.amount);
                 return (<PlayerContainer key={index} username={player.username} amount={player.amount} winChance={calculateWinChance(player.amount, totalAmount)}/>);

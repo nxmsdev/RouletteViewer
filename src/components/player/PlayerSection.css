@@ -1,0 +1,15 @@
+﻿.player_section {
+    padding: 1.5vh 1vw;
+    width: 75vw;
+
+    display: flex;
+    flex-direction: row;
+    align-content: flex-start;
+    justify-content: flex-start;
+    gap: 1.5vmin;
+    flex-wrap: wrap;
+    overflow: hidden;
+
+    backdrop-filter: brightness(0.1);
+
+}

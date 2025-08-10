@@ -1,0 +1,48 @@
+﻿.app {
+    display: flex;
+    flex-direction: column;
+}
+
+.under_header {
+    display: flex;
+    flex-direction: row-reverse;
+    height: 93vh;
+}
+
+.aside {
+    width: 25vw;
+
+    display: flex;
+    flex-direction: column;
+
+    z-index: 2;
+
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.last_round_result, .winners, .top_payments, .chat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-left: 2px solid rgba(0, 0, 0, 0.3);
+}
+
+.last_round_result, .winners, .top_payments {
+    height: 25vh;
+}
+
+.last_round_result, .winners {
+    border-bottom: 2px solid rgba(0, 0, 0, 0.3);
+}
+
+.chat {
+    height: 25vh;
+
+    background-color: black;
+    justify-content: center;
+}
+
+.title {
+    font-size: 2.5vmin;
+    padding: 1.5vmin;
+}

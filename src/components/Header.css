@@ -1,18 +1,26 @@
 ﻿.header {
-    background-color: red;
+    height: 7vh;
+    width: 84vw;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    padding: 0vh 8vw;
+
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    height: 64px;
-    border-radius: 8px;
-    padding: 0px 96px;
-    font-size: 26px;
-    font-style: normal;
+
+    font-size: 2.8vmin;
+
+    background-color: rgba(0, 0, 0, 0.3);
+
+    z-index: 1;
+
+    border-bottom: 2px solid rgba(0, 0, 0, 0.3);
 }
 
 .header div {
-    padding: 8px;
+    padding: 0.8vmin;
 }
 
 .header_right_container {

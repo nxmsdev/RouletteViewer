@@ -1,4 +1,4 @@
-﻿import "./Header.css"
+﻿import "./Header.css";
 import {useEffect, useState} from "react";
 
 export default function Header() {
@@ -38,12 +38,11 @@ export default function Header() {
     return (
         <>
             <header className={"header"}>
-                <div>Header</div>
+                <div>Ruletka</div>
                 <div className="header_right_container">
-                    <div>Do wygrania: {sumAmount * 0.9}$</div>
-                    <div>Podatek: {sumAmount * 0.1}$</div>
+                    <div>Do wygrania: {Number(sumAmount * 0.92).toFixed(0)}$</div>
+                    <div>Podatek: {Number(sumAmount * 0.08).toFixed(0)}$ (8%)</div>
                     <div>Pula: {sumAmount}$</div>
-                    <div>Kwota minimalna: 100$</div>
                 </div>
             </header>
         </>

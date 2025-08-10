@@ -1,0 +1,32 @@
+﻿.player_container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5vmin;
+
+    background-color: rgba(0, 0, 0, 0.3);
+
+    padding: 1vmin;
+
+    width: 18.25vmin;
+
+    text-wrap: wrap;
+
+    border: 2px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+.player_head {
+    background-color: #000000;
+    width: 4vmin;
+    height: 4vmin;
+}
+
+.player_username {
+    font-size: 2vmin;
+}
+
+.player_amount, .player_winchance {
+    font-size: 1.8vmin;
+}
