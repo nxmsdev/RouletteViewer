@@ -8,13 +8,14 @@ function getPreloadPath() {
 }
 
 let mainWindow = null;
+let windowSizeMultiplier = 1;
 
 // creates the main application window and loads the frontend HTML
 async function createWindow() {
 
     mainWindow = new BrowserWindow({
-        width: 1280,
-        height: 720,
+        width: 1280 * windowSizeMultiplier,
+        height: 720 * windowSizeMultiplier,
         autoHideMenuBar: true, // hide the menu bar unless Alt is pressed
         webPreferences: {
             preload: getPreloadPath(), // preloads preload.js file
@@ -106,17 +107,69 @@ async function fetchPlayerData() {
     }
 }
 
-// IPC handler to receive sumAmount updates from renderer
+function getWinnerFromDraw() {
+    const random = Math.random() * getTotalAmount(playerData);
+
+    let cumulative = 0;
+    for (const player of playerData) {
+        cumulative += player.amount;
+        if (random < cumulative) {
+            console.log("Winner: " + player.username);
+            return player.username;
+        }
+    }
+}
+
+// async function to clear JSON file content after winner is drawn
+async function clearJSONDataFile(filePath) {
+    try {
+        await fileSystem.promises.writeFile(filePath, JSON.stringify([]), 'utf-8');
+        console.log("Cleared data file:", filePath);
+    } catch (error) {
+        console.error("Failed to clear data file:", error);
+    }
+}
+
+// async function to save winner info to a JSON file
+async function saveWinnerToFile(winner, filePath) {
+    try {
+        const winnerUsername = { username: winner };
+        await fileSystem.promises.writeFile(filePath, JSON.stringify(winnerUsername), 'utf-8');
+        console.log("Saved winner to file:", filePath);
+    } catch (error) {
+        console.error("Failed to save winner file:", error);
+    }
+}
+
 ipcMain.handle('get-player-data', async () => {
     await fetchPlayerData();
     return playerData;
 });
 
-// IPC handler to receive sumAmount updates from renderer
 ipcMain.handle('get-sum-amount', async () => {
     return getTotalAmount(playerData);
 });
 
 ipcMain.handle('get-player-count', async () => {
     return playerCount;
+})
+
+ipcMain.handle('draw-the-winner', async () => {
+    const winner = getWinnerFromDraw();
+
+    if (winner) {
+        // save winner's username to the JSON file
+        const winnerDataFilePath = path.join(app.getPath('appData'), 'RoulettePaymentTracker', 'winnerData.json');
+        await saveWinnerToFile(winner, winnerDataFilePath);
+
+        // clear the JSON file with payment data
+        const jsonDataFilePath = path.join(app.getPath('appData'), 'RoulettePaymentTracker', 'paymentData.json');
+        await clearJSONDataFile(jsonDataFilePath);
+
+        // clear variables connected with JSON file reading
+        playerData = [];
+        playerCount = 0;
+    }
+
+    return winner;
 })

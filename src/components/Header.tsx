@@ -3,10 +3,54 @@ import {useEffect, useState} from "react";
 
 export default function Header() {
     let serverName = "RapySMP";
+    let intervalTimeFetch: number = 1; // interval time (in seconds) to fetch data from main process
 
     let [sumAmount, setSumAmount] = useState<number>(0); // state to store the sum amount received from the main process
-    let [_playerCount, setPlayerCount] = useState<number>(0); // state to store player count received from the main process
-    let intervalTime: number = 1; // interval time (in seconds)
+    let [playerCount, setPlayerCount] = useState<number>(0); // state to store player count received from the main process
+
+    let timeToDraw: number = 5;
+    let [timeLeftToDraw, setTimeLeftToDraw] = useState<number>(0);
+
+    function countdownTimer(duration: number, onTimerEnd?: () => void) {
+        let timerID: ReturnType<typeof setInterval> | null = null;
+
+        if (playerCount >= 2) {
+            setTimeLeftToDraw(duration); // reset timer before starting
+            timerID = setInterval(() => {
+                setTimeLeftToDraw((prev) => {
+                    if (prev <= 1) {
+                        if (onTimerEnd) onTimerEnd();
+
+                        return duration; // reset timer
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        } else {
+            setTimeLeftToDraw(duration); // reset if not enough players
+        }
+
+        return () => {
+            if (timerID) clearInterval(timerID);
+        };
+    }
+
+    let [_winner, setWinner] = useState<string>();
+
+    function drawTheWinner() {
+        if (window.electronAPI && window.electronAPI.drawTheWinner) {
+            setWinner(window.electronAPI.drawTheWinner());
+        }
+    }
+
+    useEffect(() => {
+        if (playerCount >= 2) {
+            return countdownTimer(timeToDraw, drawTheWinner);
+        }
+        else {
+            setTimeLeftToDraw(timeLeftToDraw);
+        }
+    }, [playerCount]);
 
     useEffect(() => {
 
@@ -39,11 +83,11 @@ export default function Header() {
             }
         }
 
-        // set up a repeating interval to fetch data from main every intervalTime seconds
+        // set up a repeating interval to fetch data from main
         const interval = setInterval(() => {
             fetchSumAmount().catch(console.error);
             fetchPlayerCount().catch(console.error);
-        }, intervalTime * 1000);
+        }, intervalTimeFetch * 1000);
 
         // cleanup function runs when component unmounts
         return () => {
@@ -57,7 +101,7 @@ export default function Header() {
                 <div className="header_title">Ruletka {serverName}</div>
                 <div className="header_counter">
                     <div id="grey_text">Losowanie za: </div>
-                    <div id="yellow_text">{"69"}s</div>
+                    <div id="yellow_text">{playerCount >= 2 ? `${timeLeftToDraw}s` : "Za malo graczy"}</div>
                 </div>
                 <div className="header_right_container">
                     <div className="right_cont_text">
