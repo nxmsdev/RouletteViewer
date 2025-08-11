@@ -12,7 +12,7 @@ export default function Aside() {
                 <div className="list"></div>
             </div>
             <div className="top_payments">
-                <div className="title" id="yellow_text">Najwiecej rozegranych:</div>
+                <div className="title" id="yellow_text">Najwiecej rozegranych $:</div>
                 <div className="list"></div>
             </div>
             <div className="chat">Chat</div>

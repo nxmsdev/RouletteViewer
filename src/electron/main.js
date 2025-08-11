@@ -49,6 +49,33 @@ function getTotalAmount(data) { // collect sum of all payment amounts
     return data.reduce((acc, player) => acc + player.amount, 0); // return amount
 }
 
+function updateData(oldData, newData, key, equalityFunction, sortFunction) {
+    const currentMap = new Map(oldData.map(item => [item[key], item])); // create a map for quick lookup of existing players by username
+
+    let updatedData = [];
+
+    // iterate over new player data
+    newData.forEach(newItem => {
+        const currentItem = currentMap.get(newItem[key]); // check if player exists in current data
+
+        if (!currentItem) {  // new item
+            updatedData.push(newItem);
+        } else if (!equalityFunction(currentItem, newItem)) { // existing but changed
+            updatedData.push(newItem);
+        } else { // old item
+            updatedData.push(currentItem);
+        }
+    });
+
+    if (sortFunction) { // sorting updated data
+        updatedData.sort(sortFunction);
+    }
+
+    const changed = updatedData.length !== oldData.length || updatedData.some((p, i) => p !== oldData[i]); // check if data changed by length or any player reference mismatch
+
+    return changed ? updatedData : oldData;
+}
+
 let playerData = [];
 async function fetchPlayerData() {
     try {
@@ -57,35 +84,13 @@ async function fetchPlayerData() {
 
         // check if parsed data is an array
         if (Array.isArray(jsonDataArray)) {
-            if (jsonDataArray.length === 0) {
+            if (jsonDataArray.length === 0) { //
                 playerData = [];
             }
             else {
-                const currentMap = new Map(playerData.map(player => [player.username, player])); // create a map for quick lookup of existing players by username
-
-                let updatedData = [];
-                const handledUsernames = new Set(); // keep track of usernames already handled
-
-                // iterate over new player data
-                jsonDataArray.forEach(newPlayer => {
-                    const currentPlayer = currentMap.get(newPlayer.username); // check if player exists in current data
-
-                    if (!currentPlayer) {  // add updated player if player is new or amount changed
-                        updatedData.push(newPlayer);
-                    } else if (currentPlayer.amount !== newPlayer.amount) {
-                        updatedData.push(newPlayer);
-                    } else { // otherwise, keep existing player object to preserve references
-                        updatedData.push(currentPlayer);
-                    }
-
-                    handledUsernames.add(newPlayer.username);
-                });
-
-                const changed = updatedData.length !== playerData.length || updatedData.some((p, i) => p !== playerData[i]); // check if data changed by length or any player reference mismatch
-
-                if (changed) {
-                    playerData = updatedData; // update playerData
-                }
+                const equalityFunction = (oldData, newData) => newData.amount === oldData.amount;
+                const sortFunction = (a, b) => b.amount - a.amount; // largest first
+                playerData = updateData(playerData, jsonDataArray, "username", equalityFunction, sortFunction);
             }
         }
         else {
