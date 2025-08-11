@@ -34,12 +34,21 @@ async function createWindow() {
 }
 
 // when Electron has finished initialization, create the window
-app.whenReady().then(createWindow);
+app.on('ready', async () => {
+    await createWindow();
+})
+
+app.on('before-quit', async () => {
+    await clearJSONDataFile(path.join(app.getPath('appData'), 'RoulettePaymentTracker', 'winnerData.json'));
+})
+
+
+let paymentDataFilePath = path.join(app.getPath('appData'), 'RoulettePaymentTracker', 'paymentData.json');
+let winnerDataFilePath = path.join(app.getPath('appData'), 'RoulettePaymentTracker', 'paymentData.json')
 
 async function getJSONFile() { // gets JSON file with payment data
     try {
-        const filePath = path.join(app.getPath('appData'), 'RoulettePaymentTracker', 'paymentData.json'); // build full file path
-        return fileSystem.promises.readFile(filePath, 'utf-8'); // read and return file content
+        return fileSystem.promises.readFile(paymentDataFilePath, 'utf-8'); // read and return file content
     } catch (error) {
         console.log("Couldn't get access to the JSON file.");
         return "";
@@ -159,12 +168,10 @@ ipcMain.handle('draw-the-winner', async () => {
 
     if (winner) {
         // save winner's username to the JSON file
-        const winnerDataFilePath = path.join(app.getPath('appData'), 'RoulettePaymentTracker', 'winnerData.json');
         await saveWinnerToFile(winner, winnerDataFilePath);
 
         // clear the JSON file with payment data
-        const jsonDataFilePath = path.join(app.getPath('appData'), 'RoulettePaymentTracker', 'paymentData.json');
-        await clearJSONDataFile(jsonDataFilePath);
+        await clearJSONDataFile(paymentDataFilePath);
 
         // clear variables connected with JSON file reading
         playerData = [];
