@@ -3,7 +3,7 @@
     flex-direction: column;
 }
 
-.player_section_top div {
+.amount_of_bets, .payment_command {
     padding-left: 1wv;
     padding-right: 1wv;
     padding-top: 1vh;
@@ -31,4 +31,14 @@
     overflow: hidden;
 
     backdrop-filter: brightness(0.1);
+}
+
+.payment_command {
+    display: flex;
+    flex-direction: row;
+    gap: 1vmin;
+}
+
+.payment_command div {
+    text-wrap: nowrap;
 }

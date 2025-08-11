@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 export default function PlayerSection() {
     let payUsername = "WilgotnyArtur";
+    let amountOfBetsShown: number = 30;
 
     const [playerData, setPlayerData] = useState<{username: string, amount: number}[]>([]);
     const [totalAmount, setTotalAmount] = useState<number>(0);
@@ -29,7 +30,7 @@ export default function PlayerSection() {
     }
 
     function createPlayerContainer() {
-        return playerData.map((player, index) => {
+        return playerData.slice(0, amountOfBetsShown).map((player, index) => {
             console.log("Generated new Player Component\nUsername: " + player.username + "\nAmount: " + player.amount);
             return (<PlayerContainer key={index} username={player.username} amount={player.amount} winChance={calculateWinChance(player.amount, totalAmount)}/>);
         })
@@ -38,8 +39,11 @@ export default function PlayerSection() {
     return (
         <div className="player_section">
             <div className="player_section_top">
-                <div id="grey_text">Pierwsze 30 najwiekszych zakladow:</div>
-                <div id="grey_text">/pay {payUsername} {"<kwota>"}</div>
+                <div className="amount_of_bets" id="yellow_text">Pierwsze 30 najwiekszych zakladow:</div>
+                <div className="payment_command">
+                    <div id="grey_text">Postaw zaklad przez:</div>
+                    <div id="yellow_text">/pay {payUsername} {"<kwota>"}</div>
+                </div>
             </div>
             <div className="player_containers">
                 {createPlayerContainer()}

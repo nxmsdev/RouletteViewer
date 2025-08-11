@@ -9,7 +9,7 @@
 
     padding: 1vmin;
 
-    width: 18.25vmin;
+    width: 19.5vmin;
 
     text-wrap: wrap;
 
@@ -28,6 +28,9 @@
     font-size: 2vmin;
 }
 
-.player_amount, .player_winchance {
+.player_info {
     font-size: 1.8vmin;
+    display: flex;
+    flex-direction: row;
+    gap: 0.5vmin;
 }
