@@ -1,5 +1,25 @@
 ﻿.player_section {
-    padding: 1.5vh 1vw;
+    display: flex;
+    flex-direction: column;
+}
+
+.player_section_top div {
+    padding-left: 1wv;
+    padding-right: 1wv;
+    padding-top: 1vh;
+    margin-left: 2vw;
+    margin-right: 2vw;
+}
+
+.player_section_top {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.player_containers {
+    padding: 1vh 0.65vw;
     width: 75vw;
 
     display: flex;

@@ -19,6 +19,10 @@
     border-bottom: 2px solid rgba(0, 0, 0, 0.3);
 }
 
+.header_title {
+    font-size: 3.2vmin;
+}
+
 .header div {
     padding: 0.8vmin;
 }

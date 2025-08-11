@@ -14,8 +14,8 @@ export default function PlayerContainer({ username, amount, winChance } : Player
         <div className={"player_container"}>
             <img className={"player_head"} src={imageURL} alt="player_head"></img>
             <div className={"player_username"}>{username}</div>
-            <div className={"player_amount"}>Przelew {amount}$</div>
-            <div className={"player_winchance"}>Szansa {winChance}%</div>
+            <div className={"player_amount"}>Przelew: {amount}$</div>
+            <div className={"player_winchance"}>Szansa: {winChance}%</div>
         </div>
     );
 }

@@ -5,9 +5,7 @@ export {};
 declare global {
     interface Window {
         electronAPI: {
-            readAppDataFile: (folderName: string, fileName: string) => Promise<string>;
-            getPathToJSONFile: (folderName: string, fileName: string) => Promise<string>;
-            sendSumAmountToMain: (amount: number) => void;
+            getPlayerData: () => Promise<{ username: string, amount: number }[]>;
             getSumAmount: () => Promise<number>;
         };
     }

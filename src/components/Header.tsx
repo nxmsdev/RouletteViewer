@@ -2,6 +2,8 @@
 import {useEffect, useState} from "react";
 
 export default function Header() {
+    let serverName = "RapySMP";
+
     let [sumAmount, setSumAmount] = useState<number>(0); // state to store the sum amount received from the main process
     let intervalTime: number = 1; // interval time (in seconds)
 
@@ -38,11 +40,11 @@ export default function Header() {
     return (
         <>
             <header className={"header"}>
-                <div>Ruletka</div>
+                <div className="header_title">Ruletka {serverName}</div>
                 <div className="header_right_container">
-                    <div>Do wygrania: {Number(sumAmount * 0.92).toFixed(0)}$</div>
-                    <div>Podatek: {Number(sumAmount * 0.08).toFixed(0)}$ (8%)</div>
-                    <div>Pula: {sumAmount}$</div>
+                    <div id="yellow_text">Do wygrania: {Number(sumAmount * 0.92).toFixed(0)}$</div>
+                    <div id="grey_text">Podatek: {Number(sumAmount * 0.08).toFixed(0)}$ (8%)</div>
+                    <div id="grey_text">Pula: {sumAmount}$</div>
                 </div>
             </header>
         </>

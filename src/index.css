@@ -6,10 +6,9 @@
 
     font-style: normal;
     text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.6);
-    color: #f8f8f8;
+    color: #F8F8F8;
 
     overflow: hidden !important;
-
 }
 
 body {
@@ -20,4 +19,12 @@ body {
     background-size: 64px;
     box-shadow: 0px 0px 32px rgba(0, 0, 0, 0.5) inset;
     backdrop-filter: brightness(0.5);
+}
+
+#yellow_text {
+    color: #FFAA00;
+}
+
+#grey_text {
+    color: #AAAAAA;
 }
