@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 export default function PlayerSection() {
     let [playerData, setPlayerData] = useState<{username: string, amount: number}[]>([]);
     let [totalAmount, setTotalAmount] = useState(0);
-    async function fetchData(folderName: string, fileName: string): Promise<void> {
+    async function fetchPlayerData(folderName: string, fileName: string): Promise<void> {
         if (window.electronAPI && window.electronAPI.readAppDataFile) {
             try {
                 const jsonData = await window.electronAPI.readAppDataFile(folderName, fileName); // read the JSON file contents as a string
@@ -74,24 +74,30 @@ export default function PlayerSection() {
             const folderName = 'RoulettePaymentTracker';
             const fileName = 'paymentData.json';
 
-            await fetchData(folderName, fileName); // fetch data immediately after component mounts
+            await fetchPlayerData(folderName, fileName); // fetch data immediately after component mounts
 
-            const interval = setInterval(async () => {await fetchData(folderName, fileName);}, intervalTime * 1000); // set up an interval to fetch data
+            const interval = setInterval(async () => {await fetchPlayerData(folderName, fileName);}, intervalTime * 1000); // set up an interval to fetch data
 
             // clean up the interval when the component unmounts
             return () => clearInterval(interval);
         })();
     }, []);
-    let calculateWinChance = (amount: number,  totalAmount: number) => {
+
+    function calculateWinChance(amount: number,  totalAmount: number) {
         return parseFloat(((amount / totalAmount) * 100).toFixed(2));
     }
 
+    function createPlayerContainer() {
+        return playerData.map((player, index) => {
+            console.log("Generate new Player Component\nUsername: " + player.username + "\nAmount: " + player.amount);
+            return (<PlayerContainer key={index} username={player.username} amount={player.amount} winChance={calculateWinChance(player.amount, totalAmount)}/>);
+        })
+    }
+
+
     return (
         <div className="player_section">
-            {playerData.map((player, index) => {
-                console.log("Generate new Player Component\nUsername: " + player.username + "\nAmount: " + player.amount);
-                return (<PlayerContainer key={index} username={player.username} amount={player.amount} winChance={calculateWinChance(player.amount, totalAmount)}/>);
-            })}
+            {createPlayerContainer()}
         </div>
     );
 }

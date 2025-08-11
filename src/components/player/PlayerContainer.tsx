@@ -8,9 +8,11 @@ type PlayerContainerProps = {
 
 export default function PlayerContainer({ username, amount, winChance } : PlayerContainerProps) {
 
+    let imageURL: string = `https://mc-heads.net/avatar/${username}` ;
+
     return (
         <div className={"player_container"}>
-            <div className={"player_head"}></div>
+            <img className={"player_head"} src={imageURL} alt="player_head"></img>
             <div className={"player_username"}>{username}</div>
             <div className={"player_amount"}>Przelew {amount}$</div>
             <div className={"player_winchance"}>Szansa {winChance}%</div>

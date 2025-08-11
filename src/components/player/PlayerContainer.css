@@ -18,9 +18,10 @@
 }
 
 .player_head {
-    background-color: #000000;
     width: 4vmin;
     height: 4vmin;
+    padding: 0.5vmin;
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .player_username {
