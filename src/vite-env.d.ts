@@ -7,6 +7,7 @@ declare global {
         electronAPI: {
             getPlayerData: () => Promise<{ username: string, amount: number }[]>;
             getSumAmount: () => Promise<number>;
+            getPlayerCount: () => Promise<number>;
         };
     }
 }

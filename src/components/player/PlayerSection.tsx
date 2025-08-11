@@ -39,7 +39,7 @@ export default function PlayerSection() {
     return (
         <div className="player_section">
             <div className="player_section_top">
-                <div className="amount_of_bets" id="yellow_text">Pierwsze 30 najwiekszych zakladow:</div>
+                <div className="amount_of_bets" id="grey_text">Pierwsze 30 najwiekszych zakladow:</div>
                 <div className="payment_command">
                     <div id="grey_text">Postaw zaklad przez:</div>
                     <div id="yellow_text">/pay {payUsername} {"<kwota>"}</div>

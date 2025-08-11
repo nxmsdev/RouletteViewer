@@ -77,6 +77,7 @@ function updateData(oldData, newData, key, equalityFunction, sortFunction) {
 }
 
 let playerData = [];
+let playerCount = 0;
 async function fetchPlayerData() {
     try {
         const jsonData = await getJSONFile(); // read the JSON file contents as a string
@@ -92,6 +93,8 @@ async function fetchPlayerData() {
                 const sortFunction = (a, b) => b.amount - a.amount; // largest first
                 playerData = updateData(playerData, jsonDataArray, "username", equalityFunction, sortFunction);
             }
+
+            playerCount = playerData.length;
         }
         else {
             console.error('JSON is not an array');
@@ -113,3 +116,7 @@ ipcMain.handle('get-player-data', async () => {
 ipcMain.handle('get-sum-amount', async () => {
     return getTotalAmount(playerData);
 });
+
+ipcMain.handle('get-player-count', async () => {
+    return playerCount;
+})

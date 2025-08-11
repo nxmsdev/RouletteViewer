@@ -1,9 +1,9 @@
 ﻿.header {
     height: 7vh;
-    width: 84vw;
+    width: 92vw;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
-    padding: 0vh 8vw;
+    padding: 0vw 4vw;
 
     display: flex;
     flex-direction: row;
@@ -32,4 +32,16 @@
     flex-direction: row;
     align-items: center;
     gap: 30px;
+}
+
+.header_counter {
+    display: flex;
+    flex-direction: row;
+    gap: 0.1vmin;
+}
+
+.right_cont_text {
+    display: flex;
+    flex-direction: row;
+    gap: 0.1vmin;
 }
