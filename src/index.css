@@ -18,7 +18,6 @@ body {
     image-rendering: pixelated;
     background-size: 64px;
     box-shadow: 0px 0px 32px rgba(0, 0, 0, 0.5) inset;
-    backdrop-filter: brightness(0.5);
 }
 
 #yellow_text {

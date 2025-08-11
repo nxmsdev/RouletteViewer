@@ -42,9 +42,9 @@ app.on('before-quit', async () => {
     await clearJSONDataFile(path.join(app.getPath('appData'), 'RoulettePaymentTracker', 'winnerData.json'));
 })
 
-
+// paths to JSON files at AppData folder
 let paymentDataFilePath = path.join(app.getPath('appData'), 'RoulettePaymentTracker', 'paymentData.json');
-let winnerDataFilePath = path.join(app.getPath('appData'), 'RoulettePaymentTracker', 'paymentData.json')
+let winnerDataFilePath = path.join(app.getPath('appData'), 'RoulettePaymentTracker', 'winnerData.json')
 
 async function getJSONFile() { // gets JSON file with payment data
     try {
@@ -116,6 +116,7 @@ async function fetchPlayerData() {
     }
 }
 
+// draw a winner
 function getWinnerFromDraw() {
     const random = Math.random() * getTotalAmount(playerData);
 
@@ -140,10 +141,10 @@ async function clearJSONDataFile(filePath) {
 }
 
 // async function to save winner info to a JSON file
-async function saveWinnerToFile(winner, filePath) {
+async function saveWinnerToFile(winner, winAmount, filePath) {
     try {
-        const winnerUsername = { username: winner };
-        await fileSystem.promises.writeFile(filePath, JSON.stringify(winnerUsername), 'utf-8');
+        const winnerUsername = { username: winner, amount: winAmount};
+        await fileSystem.promises.writeFile(filePath, JSON.stringify(winnerUsername, winAmount), 'utf-8');
         console.log("Saved winner to file:", filePath);
     } catch (error) {
         console.error("Failed to save winner file:", error);
@@ -163,12 +164,14 @@ ipcMain.handle('get-player-count', async () => {
     return playerCount;
 })
 
+let winAmountPrecentage = 0.92;
 ipcMain.handle('draw-the-winner', async () => {
     const winner = getWinnerFromDraw();
+    const winAmount = parseFloat(Number(getTotalAmount(playerData) * winAmountPrecentage).toFixed(0));
 
     if (winner) {
         // save winner's username to the JSON file
-        await saveWinnerToFile(winner, winnerDataFilePath);
+        await saveWinnerToFile(winner, winAmount, winnerDataFilePath);
 
         // clear the JSON file with payment data
         await clearJSONDataFile(paymentDataFilePath);

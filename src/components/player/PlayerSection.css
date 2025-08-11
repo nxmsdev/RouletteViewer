@@ -29,8 +29,6 @@
     gap: 1.5vmin;
     flex-wrap: wrap;
     overflow: hidden;
-
-    backdrop-filter: brightness(0.1);
 }
 
 .payment_command {

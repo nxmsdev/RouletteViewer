@@ -1,5 +1,6 @@
 ﻿import "./Header.css";
 import {useEffect, useState} from "react";
+import ShowWinner from "./ShowWinner.tsx";
 
 export default function Header() {
     let serverName = "RapySMP";
@@ -7,51 +8,6 @@ export default function Header() {
 
     let [sumAmount, setSumAmount] = useState<number>(0); // state to store the sum amount received from the main process
     let [playerCount, setPlayerCount] = useState<number>(0); // state to store player count received from the main process
-
-    let timeToDraw: number = 5;
-    let [timeLeftToDraw, setTimeLeftToDraw] = useState<number>(0);
-
-    function countdownTimer(duration: number, onTimerEnd?: () => void) {
-        let timerID: ReturnType<typeof setInterval> | null = null;
-
-        if (playerCount >= 2) {
-            setTimeLeftToDraw(duration); // reset timer before starting
-            timerID = setInterval(() => {
-                setTimeLeftToDraw((prev) => {
-                    if (prev <= 1) {
-                        if (onTimerEnd) onTimerEnd();
-
-                        return duration; // reset timer
-                    }
-                    return prev - 1;
-                });
-            }, 1000);
-        } else {
-            setTimeLeftToDraw(duration); // reset if not enough players
-        }
-
-        return () => {
-            if (timerID) clearInterval(timerID);
-        };
-    }
-
-    let [_winner, setWinner] = useState<string>();
-
-    function drawTheWinner() {
-        if (window.electronAPI && window.electronAPI.drawTheWinner) {
-            setWinner(window.electronAPI.drawTheWinner());
-        }
-    }
-
-    useEffect(() => {
-        if (playerCount >= 2) {
-            return countdownTimer(timeToDraw, drawTheWinner);
-        }
-        else {
-            setTimeLeftToDraw(timeLeftToDraw);
-        }
-    }, [playerCount]);
-
     useEffect(() => {
 
         // async function to request the current sum amount from the main process
@@ -95,8 +51,84 @@ export default function Header() {
         }
     }, []);
 
+    let timeToDraw: number = 5;
+    let [timeLeftToDraw, setTimeLeftToDraw] = useState<number>(0);
+    function countdownTimer(duration: number, onTimerEnd?: () => void) {
+        let timerID: ReturnType<typeof setInterval> | null = null;
+
+        if (playerCount >= 2) {
+            setTimeLeftToDraw(duration); // reset timer before starting
+            timerID = setInterval(() => {
+                setTimeLeftToDraw((prev) => {
+                    if (prev <= 1) {
+                        if (onTimerEnd) onTimerEnd();
+
+                        return duration; // reset timer
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        } else {
+            setTimeLeftToDraw(duration); // reset if not enough players
+        }
+
+        return () => {
+            if (timerID) clearInterval(timerID);
+        };
+    }
+    useEffect(() => {
+        if (playerCount >= 2) {
+            return countdownTimer(timeToDraw, drawTheWinner);
+        }
+        else {
+            setTimeLeftToDraw(timeLeftToDraw);
+        }
+    }, [playerCount]);
+
+    let winPercentage: number = 0.92;
+    let winAmount: string = Number(sumAmount * winPercentage).toFixed(0)
+    let taxPercentage: number = 0.08;
+    let taxAmount: string = Number(sumAmount * taxPercentage).toFixed(0)
+
+    let [winner, setWinner] = useState<string>("");
+    let [winnerAmount, setWinnerAmount] = useState<string>("");
+    function drawTheWinner() {
+        if (window.electronAPI && window.electronAPI.drawTheWinner) {
+            setWinner(window.electronAPI.drawTheWinner());
+            setWinnerOpacity(1);
+            setWinnerAmount(winAmount)
+        }
+    }
+
+    let [winnerOpacity, setWinnerOpacity] = useState<number>(0);
+    let showWinnerBeforeFade: number = 2; // how long in second will winner be swhon before fading out
+    useEffect(() => {
+        if (winner) {
+            const visibleTimeout = setTimeout(() => {
+                const fadeInterval = setInterval(() => {
+                    setWinnerOpacity((prev) => {
+                        if (prev <= 0) {
+                            clearInterval(fadeInterval);
+                            setWinnerOpacity(0); // Hide winner component when opacity reaches 0
+                            return 0;
+                        }
+                        return +(prev - 0.05).toFixed(2); // reduce opacity gradually
+                    });
+                }, 50);
+            }, showWinnerBeforeFade * 1000);
+
+            return () => {
+                clearTimeout(visibleTimeout);
+            };
+        }
+    }, [winner]);
+
     return (
         <>
+            <div className="show_winner"style={{ opacity: winnerOpacity, transition: "opacity 50ms linear" }}>
+                <ShowWinner username={winner} amount={winnerAmount}/>
+            </div>
+
             <header className={"header"}>
                 <div className="header_title">Ruletka {serverName}</div>
                 <div className="header_counter">
@@ -106,11 +138,11 @@ export default function Header() {
                 <div className="header_right_container">
                     <div className="right_cont_text">
                         <div>Do wygrania:</div>
-                        <div id="yellow_text">{Number(sumAmount * 0.92).toFixed(0)}$</div>
+                        <div id="yellow_text">{winAmount}$</div>
                     </div>
                     <div className="right_cont_text">
                         <div id="grey_text">Podatek:</div>
-                        <div>{Number(sumAmount * 0.08).toFixed(0)}$ (8%)</div>
+                        <div>{taxAmount}$ ({taxPercentage * 100}%)</div>
                     </div>
                     <div className="right_cont_text">
                         <div id="grey_text">Pula:</div>

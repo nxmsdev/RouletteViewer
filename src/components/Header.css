@@ -45,3 +45,38 @@
     flex-direction: row;
     gap: 0.1vmin;
 }
+
+.show_winner {
+    position: absolute;
+    z-index: 4;
+    top: 50%;
+    left: 50%;
+    transform: translateY(-50%) translateX(-50%);
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.show_winner_text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1vmin;
+}
+
+.show_winner .show_winner_title {
+    font-size: 8vmin;
+}
+
+.show_winner .show_winner_username{
+    font-size: 14vmin;
+}
+
+.show_winner .show_winner_amount{
+    font-size: 12vmin;
+}
