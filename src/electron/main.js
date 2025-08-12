@@ -39,24 +39,21 @@ app.on('ready', async () => {
 })
 
 app.on('before-quit', async () => {
-    await clearJSONDataFile(path.join(app.getPath('appData'), 'RoulettePaymentTracker', 'winnerData.json'));
+    await clearJSONDataFile(winnerDataFilePath, "");
 })
 
 // paths to JSON files at AppData folder
 let paymentDataFilePath = path.join(app.getPath('appData'), 'RoulettePaymentTracker', 'paymentData.json');
 let winnerDataFilePath = path.join(app.getPath('appData'), 'RoulettePaymentTracker', 'winnerData.json')
+let rouletteStatusFilePath = path.join(app.getPath('appData'), 'RoulettePaymentTracker', 'rouletteStatus.json')
 
-async function getJSONFile() { // gets JSON file with payment data
+async function getJSONFile(filePath) { // gets JSON file with payment data
     try {
-        return fileSystem.promises.readFile(paymentDataFilePath, 'utf-8'); // read and return file content
+        return fileSystem.promises.readFile(filePath, 'utf-8'); // read and return file content
     } catch (error) {
         console.log("Couldn't get access to the JSON file.");
         return "";
     }
-}
-
-function getTotalAmount(data) { // collect sum of all payment amounts
-    return data.reduce((acc, player) => acc + player.amount, 0); // return amount
 }
 
 function updateData(oldData, newData, key, equalityFunction, sortFunction) {
@@ -86,22 +83,32 @@ function updateData(oldData, newData, key, equalityFunction, sortFunction) {
     return changed ? updatedData : oldData;
 }
 
+// async function to clear JSON file content after winner is drawn
+async function clearJSONDataFile(filePath, initialText) {
+    try {
+        await fileSystem.promises.writeFile(filePath, initialText, 'utf-8');
+        console.log("Cleared data file:", filePath);
+    } catch (error) {
+        console.error("Failed to clear data file:", error);
+    }
+}
+
 let playerData = [];
 let playerCount = 0;
 async function fetchPlayerData() {
     try {
-        const jsonData = await getJSONFile(); // read the JSON file contents as a string
-        const jsonDataArray = JSON.parse(jsonData); // parse the JSON string into an object/array
+        const jsonData = await getJSONFile(paymentDataFilePath); // read the JSON file contents as a string
+        const playerDataArray = JSON.parse(jsonData); // parse the JSON string into an object/array
 
         // check if parsed data is an array
-        if (Array.isArray(jsonDataArray)) {
-            if (jsonDataArray.length === 0) { //
+        if (Array.isArray(playerDataArray)) {
+            if (playerDataArray.length === 0) { //
                 playerData = [];
             }
             else {
                 const equalityFunction = (oldData, newData) => newData.amount === oldData.amount;
                 const sortFunction = (a, b) => b.amount - a.amount; // largest first
-                playerData = updateData(playerData, jsonDataArray, "username", equalityFunction, sortFunction);
+                playerData = updateData(playerData, playerDataArray, "username", equalityFunction, sortFunction);
             }
 
             playerCount = playerData.length;
@@ -116,9 +123,25 @@ async function fetchPlayerData() {
     }
 }
 
+ipcMain.handle('get-player-data', async () => {
+    await fetchPlayerData();
+    return playerData;
+});
+
+ipcMain.handle('get-player-count', async () => {
+    return playerCount;
+})
+
+function getSumAmount(data) { // collect sum of all payment amounts
+    return data.reduce((acc, player) => acc + player.amount, 0); // return amount
+}
+ipcMain.handle('get-sum-amount', async () => {
+    return getSumAmount(playerData);
+});
+
 // draw a winner
 function getWinnerFromDraw() {
-    const random = Math.random() * getTotalAmount(playerData);
+    const random = Math.random() * getSumAmount(playerData);
 
     let cumulative = 0;
     for (const player of playerData) {
@@ -127,16 +150,6 @@ function getWinnerFromDraw() {
             console.log("Winner: " + player.username);
             return player.username;
         }
-    }
-}
-
-// async function to clear JSON file content after winner is drawn
-async function clearJSONDataFile(filePath) {
-    try {
-        await fileSystem.promises.writeFile(filePath, JSON.stringify([]), 'utf-8');
-        console.log("Cleared data file:", filePath);
-    } catch (error) {
-        console.error("Failed to clear data file:", error);
     }
 }
 
@@ -151,30 +164,17 @@ async function saveWinnerToFile(winner, winAmount, filePath) {
     }
 }
 
-ipcMain.handle('get-player-data', async () => {
-    await fetchPlayerData();
-    return playerData;
-});
-
-ipcMain.handle('get-sum-amount', async () => {
-    return getTotalAmount(playerData);
-});
-
-ipcMain.handle('get-player-count', async () => {
-    return playerCount;
-})
-
 let winAmountPrecentage = 0.92;
 ipcMain.handle('draw-the-winner', async () => {
     const winner = getWinnerFromDraw();
-    const winAmount = parseFloat(Number(getTotalAmount(playerData) * winAmountPrecentage).toFixed(0));
+    const winAmount = parseFloat(Number(getSumAmount(playerData) * winAmountPrecentage).toFixed(0));
 
     if (winner) {
         // save winner's username to the JSON file
         await saveWinnerToFile(winner, winAmount, winnerDataFilePath);
 
         // clear the JSON file with payment data
-        await clearJSONDataFile(paymentDataFilePath);
+        await clearJSONDataFile(paymentDataFilePath, "[]");
 
         // clear variables connected with JSON file reading
         playerData = [];
@@ -183,3 +183,22 @@ ipcMain.handle('draw-the-winner', async () => {
 
     return winner;
 })
+
+let rouletteStatus = false;
+async function fetchRouletteStatus() {
+    try {
+        const jsonData = await getJSONFile(rouletteStatusFilePath); // await the promise
+        const rouletteData = JSON.parse(jsonData); // now this is safe
+        rouletteStatus = rouletteData.rouletteStatus;
+        console.log("Current roulette status: " + rouletteStatus);
+    }
+    catch (error) {
+        console.error("Error fetching or parsing data:", error);
+        rouletteStatus = false;
+    }
+}
+
+ipcMain.handle('get-roulette-status', async () => {
+    await fetchRouletteStatus();
+    return rouletteStatus;
+});

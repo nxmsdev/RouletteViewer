@@ -1,6 +1,7 @@
 ﻿import "./Header.css";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import ShowWinner from "./ShowWinner.tsx";
+import RouletteStatus from "./RouletteStatus.tsx";
 
 export default function Header() {
     let serverName = "RapySMP";
@@ -51,12 +52,53 @@ export default function Header() {
         }
     }, []);
 
+    let [rouletteStatus, setRouletteStatus] = useState<boolean>(false);
+    let [rouletteStatusOpacity, setRouletteStatusOpacity] = useState<number>(1);
+    let rouletteStatusRef = useRef(rouletteStatus);
+    const [winnerAnimationDone, setWinnerAnimationDone] = useState(false);
+
+    useEffect(() => {
+        rouletteStatusRef.current = rouletteStatus;
+    }, [rouletteStatus]);
+
+    async function getRouletteStatus() {
+        if (window.electronAPI && window.electronAPI.getRouletteStatus) {
+            const status = await window.electronAPI.getRouletteStatus();
+
+            setRouletteStatus(status);
+            setRouletteStatusOpacity(status ? 0 : 1);
+        }
+    }
+
+    useEffect(() => {
+        let intervalId: ReturnType<typeof setInterval>;
+
+        async function checkStatus() {
+            if (!rouletteStatusRef.current) {
+                await getRouletteStatus().catch(console.error);
+            }
+        }
+
+        intervalId = setInterval(checkStatus, 500);
+
+        return () => clearInterval(intervalId);
+    }, []);
+
+    useEffect(() => {
+        if (winnerAnimationDone) {
+            getRouletteStatus().catch(console.error);
+
+            setWinnerAnimationDone(false);
+        }
+
+    }, [winnerAnimationDone]);
+
     let timeToDraw: number = 5;
     let [timeLeftToDraw, setTimeLeftToDraw] = useState<number>(0);
     function countdownTimer(duration: number, onTimerEnd?: () => void) {
         let timerID: ReturnType<typeof setInterval> | null = null;
 
-        if (playerCount >= 2) {
+        if (playerCount >= 2 && rouletteStatusRef.current) {
             setTimeLeftToDraw(duration); // reset timer before starting
             timerID = setInterval(() => {
                 setTimeLeftToDraw((prev) => {
@@ -77,13 +119,12 @@ export default function Header() {
         };
     }
     useEffect(() => {
-        if (playerCount >= 2) {
+        if (playerCount >= 2 && rouletteStatusRef.current) {
             return countdownTimer(timeToDraw, drawTheWinner);
+        } else {
+            setTimeLeftToDraw(timeToDraw);
         }
-        else {
-            setTimeLeftToDraw(timeLeftToDraw);
-        }
-    }, [playerCount]);
+    }, [playerCount, rouletteStatus]);
 
     let winPercentage: number = 0.92;
     let winAmount: string = Number(sumAmount * winPercentage).toFixed(0)
@@ -110,6 +151,7 @@ export default function Header() {
                         if (prev <= 0) {
                             clearInterval(fadeInterval);
                             setWinnerOpacity(0); // Hide winner component when opacity reaches 0
+                            setWinnerAnimationDone(true); // animation finished here
                             return 0;
                         }
                         return +(prev - 0.05).toFixed(2); // reduce opacity gradually
@@ -125,8 +167,11 @@ export default function Header() {
 
     return (
         <>
-            <div className="show_winner"style={{ opacity: winnerOpacity, transition: "opacity 50ms linear" }}>
+            <div className="show_winner" style={{ opacity: winnerOpacity, transition: "opacity 200ms linear" }}>
                 <ShowWinner username={winner} amount={winnerAmount}/>
+            </div>
+            <div className="roulette_status" style={{ opacity: rouletteStatusOpacity, transition: "opacity 200ms linear" }}>
+                <RouletteStatus/>
             </div>
 
             <header className={"header"}>

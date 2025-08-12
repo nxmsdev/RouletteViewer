@@ -9,6 +9,7 @@ declare global {
             getSumAmount: () => Promise<number>;
             getPlayerCount: () => Promise<number>;
             drawTheWinner: () => string;
+            getRouletteStatus: () => Promise<boolean>;
         };
     }
 }

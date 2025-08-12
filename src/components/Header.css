@@ -55,7 +55,7 @@
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(3px);
 
     display: flex;
     justify-content: center;
@@ -70,7 +70,7 @@
 }
 
 .show_winner .show_winner_title {
-    font-size: 8vmin;
+    font-size: 6vmin;
 }
 
 .show_winner .show_winner_username{
@@ -78,5 +78,36 @@
 }
 
 .show_winner .show_winner_amount{
-    font-size: 12vmin;
+    font-size: 10vmin;
+}
+
+.roulette_status {
+    position: absolute;
+    z-index: 4;
+    top: 50%;
+    left: 50%;
+    transform: translateY(-50%) translateX(-50%);
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.roulette_status_text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1vmin;
+}
+
+.roulette_status .roulette_status_text {
+    font-size: 14vmin;
+}
+
+.roulette_status .roulette_status_small {
+    font-size: 6vmin;
 }
