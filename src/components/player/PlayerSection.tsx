@@ -9,7 +9,7 @@ export default function PlayerSection() {
     const [playerData, setPlayerData] = useState<{username: string, amount: number}[]>([]);
     const [totalAmount, setTotalAmount] = useState<number>(0);
 
-    let intervalTime: number = 1; // interval time (in seconds)
+    let intervalTime: number = 0.5; // interval time (in seconds)
 
     useEffect(() => {
         async function fetchPlayerData() {

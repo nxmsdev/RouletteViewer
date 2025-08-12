@@ -5,7 +5,7 @@ import RouletteStatus from "./RouletteStatus.tsx";
 
 export default function Header() {
     let serverName = "RapySMP";
-    let intervalTimeFetch: number = 1; // interval time (in seconds) to fetch data from main process
+    let intervalTimeFetch: number = 0.5; // interval time (in seconds) to fetch data from main process
 
     let [sumAmount, setSumAmount] = useState<number>(0); // state to store the sum amount received from the main process
     let [playerCount, setPlayerCount] = useState<number>(0); // state to store player count received from the main process
@@ -93,7 +93,7 @@ export default function Header() {
 
     }, [winnerAnimationDone]);
 
-    let timeToDraw: number = 5;
+    let timeToDraw: number = 90;
     let [timeLeftToDraw, setTimeLeftToDraw] = useState<number>(0);
     function countdownTimer(duration: number, onTimerEnd?: () => void) {
         let timerID: ReturnType<typeof setInterval> | null = null;

@@ -190,7 +190,6 @@ async function fetchRouletteStatus() {
         const jsonData = await getJSONFile(rouletteStatusFilePath); // await the promise
         const rouletteData = JSON.parse(jsonData); // now this is safe
         rouletteStatus = rouletteData.rouletteStatus;
-        console.log("Current roulette status: " + rouletteStatus);
     }
     catch (error) {
         console.error("Error fetching or parsing data:", error);
