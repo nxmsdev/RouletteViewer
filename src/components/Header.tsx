@@ -70,11 +70,19 @@ export default function Header() {
         }
     }
 
+    const playerCountRef = useRef(playerCount);
+    useEffect(() => {
+        playerCountRef.current = playerCount;
+    }, [playerCount])
+
+    useEffect(() => { rouletteStatusRef.current = rouletteStatus; }, [rouletteStatus]);
+    useEffect(() => { playerCountRef.current = playerCount; }, [playerCount]);
+
     useEffect(() => {
         let intervalId: ReturnType<typeof setInterval>;
 
         async function checkStatus() {
-            if (!rouletteStatusRef.current && playerCount == 0) {
+            if (!rouletteStatusRef.current || playerCountRef.current < 2) {
                 await getRouletteStatus().catch(console.error);
             }
         }
@@ -142,7 +150,7 @@ export default function Header() {
     }
 
     let [winnerOpacity, setWinnerOpacity] = useState<number>(0);
-    let showWinnerBeforeFade: number = 2; // how long in second will winner be swhon before fading out
+    let showWinnerBeforeFade: number = 5; // how long in second will winner be swhon before fading out
     useEffect(() => {
         if (winner) {
             const visibleTimeout = setTimeout(() => {
