@@ -74,7 +74,7 @@ export default function Header() {
         let intervalId: ReturnType<typeof setInterval>;
 
         async function checkStatus() {
-            if (!rouletteStatusRef.current || playerCount == 0) {
+            if (!rouletteStatusRef.current && playerCount == 0) {
                 await getRouletteStatus().catch(console.error);
             }
         }

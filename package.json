@@ -1,7 +1,7 @@
 {
   "name": "roulette_viewer_app",
   "productName": "Roulette Viewer",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "nxms",
   "description": "View data collected by Minecraft RoulettePaymentTracker mod",
   "type": "module",

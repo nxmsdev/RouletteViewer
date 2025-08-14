@@ -8,7 +8,7 @@ function getPreloadPath() {
 }
 
 let mainWindow = null;
-let windowSizeMultiplier = 1;
+let windowSizeMultiplier = 1.5;
 
 // creates the main application window and loads the frontend HTML
 async function createWindow() {
