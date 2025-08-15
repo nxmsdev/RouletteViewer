@@ -6,4 +6,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getPlayerCount: () => ipcRenderer.invoke('get-player-count'),
     drawTheWinner: () => ipcRenderer.invoke('draw-the-winner'),
     getRouletteStatus: () => ipcRenderer.invoke('get-roulette-status'),
+    getWinAmount: () => ipcRenderer.invoke('get-win-amount'),
+    getTaxAmount: () => ipcRenderer.invoke('get-tax-amount'),
 });

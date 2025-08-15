@@ -1,7 +1,7 @@
 {
   "name": "roulette_viewer_app",
   "productName": "Roulette Viewer",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": "nxms",
   "description": "View data collected by Minecraft RoulettePaymentTracker mod",
   "type": "module",
@@ -9,7 +9,7 @@
   "scripts": {
     "dev:react": "vite",
     "dev:electron": "electron .",
-    "build": "tsc -b && vite build && electron-builder",
+    "build": "tsc -b && vite build",
     "dist": "electron-builder",
     "lint": "eslint .",
     "preview": "vite preview"

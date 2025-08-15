@@ -1,6 +1,6 @@
 ﻿type ShowWinnerProps = {
     username: string;
-    amount: string;
+    amount: number;
 };
 
 export default function ShowWinner( { username, amount }: ShowWinnerProps) {

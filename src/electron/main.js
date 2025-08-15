@@ -165,13 +165,22 @@ async function saveWinnerToFile(winner, winAmount, filePath) {
 }
 
 let winAmountPrecentage = 0.92;
+ipcMain.handle('get-win-amount', async () => {
+    return parseFloat(Number(getSumAmount(playerData) * winAmountPrecentage).toFixed(0));
+})
+
+let taxAmountPrecentage = 0.08;
+ipcMain.handle('get-tax-amount', async () => {
+    return parseFloat(Number(getSumAmount(playerData) * taxAmountPrecentage).toFixed(0));
+});
+
 ipcMain.handle('draw-the-winner', async () => {
     const winner = getWinnerFromDraw();
-    const winAmount = parseFloat(Number(getSumAmount(playerData) * winAmountPrecentage).toFixed(0));
+    const winAmount = Number(getSumAmount(playerData) * winAmountPrecentage).toFixed(0);
 
     if (winner) {
         // save winner's username to the JSON file
-        await saveWinnerToFile(winner, winAmount, winnerDataFilePath);
+        await saveWinnerToFile(winner, parseFloat(winAmount), winnerDataFilePath);
 
         // clear the JSON file with payment data
         await clearJSONDataFile(paymentDataFilePath, "[]");

@@ -9,6 +9,8 @@ export default function Header() {
 
     let [sumAmount, setSumAmount] = useState<number>(0); // state to store the sum amount received from the main process
     let [playerCount, setPlayerCount] = useState<number>(0); // state to store player count received from the main process
+    let [winAmount, setWinAmount] = useState<number>(0);
+    let [taxAmount, setTaxAmount] = useState<number>(0);
     useEffect(() => {
 
         // async function to request the current sum amount from the main process
@@ -40,10 +42,40 @@ export default function Header() {
             }
         }
 
+        async function fetchWinAmount() {
+            if (window.electronAPI && window.electronAPI.getWinAmount) {
+                try {
+                    const win: number = await window.electronAPI.getWinAmount();
+                    console.log("Received winAmount by the Header: " + win);
+
+                    setWinAmount(win);
+                }
+                catch (error) {
+                    console.log("Failed to fetch winAmount: " + error);
+                }
+            }
+        }
+
+        async function fetchTaxAmount() {
+            if (window.electronAPI && window.electronAPI.getTaxAmount) {
+                try {
+                    const tax: number = await window.electronAPI.getTaxAmount();
+                    console.log("Received taxAmount by the Header: " + tax);
+
+                    setTaxAmount(tax);
+                }
+                catch (error) {
+                    console.log("Failed to fetch taxAmount: " + error);
+                }
+            }
+        }
+
         // set up a repeating interval to fetch data from main
         const interval = setInterval(() => {
             fetchSumAmount().catch(console.error);
             fetchPlayerCount().catch(console.error);
+            fetchWinAmount().catch(console.error);
+            fetchTaxAmount().catch(console.error);
         }, intervalTimeFetch * 1000);
 
         // cleanup function runs when component unmounts
@@ -101,8 +133,9 @@ export default function Header() {
 
     }, [winnerAnimationDone]);
 
-    let timeToDraw: number = 90;
+    let timeToDraw: number = 10;
     let [timeLeftToDraw, setTimeLeftToDraw] = useState<number>(0);
+    let [winnerAmount, setWinnerAmount] = useState<number>(0);
     function countdownTimer(duration: number, onTimerEnd?: () => void) {
         let timerID: ReturnType<typeof setInterval> | null = null;
 
@@ -111,6 +144,8 @@ export default function Header() {
             timerID = setInterval(() => {
                 setTimeLeftToDraw((prev) => {
                     if (prev <= 1) {
+                        setWinnerAmount(winAmount);
+
                         if (onTimerEnd) onTimerEnd();
 
                         return duration; // reset timer
@@ -134,23 +169,17 @@ export default function Header() {
         }
     }, [playerCount, rouletteStatus]);
 
-    let winPercentage: number = 0.92;
-    let winAmount: string = Number(sumAmount * winPercentage).toFixed(0)
-    let taxPercentage: number = 0.08;
-    let taxAmount: string = Number(sumAmount * taxPercentage).toFixed(0)
-
     let [winner, setWinner] = useState<string>("");
-    let [winnerAmount, setWinnerAmount] = useState<string>("");
-    function drawTheWinner() {
+    async function drawTheWinner() {
         if (window.electronAPI && window.electronAPI.drawTheWinner) {
-            setWinner(window.electronAPI.drawTheWinner());
+            const name = await window.electronAPI.drawTheWinner();
+            setWinner(name);
             setWinnerOpacity(1);
-            setWinnerAmount(winAmount)
         }
     }
 
     let [winnerOpacity, setWinnerOpacity] = useState<number>(0);
-    let showWinnerBeforeFade: number = 5; // how long in second will winner be swhon before fading out
+    let showWinnerBeforeFade: number = 3; // how long in second will winner be swhon before fading out
     useEffect(() => {
         if (winner) {
             const visibleTimeout = setTimeout(() => {
@@ -195,7 +224,7 @@ export default function Header() {
                     </div>
                     <div className="right_cont_text">
                         <div id="grey_text">Podatek:</div>
-                        <div>{taxAmount}$ ({taxPercentage * 100}%)</div>
+                        <div>{taxAmount}$ ({8}%)</div>
                     </div>
                     <div className="right_cont_text">
                         <div id="grey_text">Pula:</div>
